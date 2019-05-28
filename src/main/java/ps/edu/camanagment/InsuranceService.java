@@ -1,10 +1,17 @@
 package ps.edu.camanagment;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class InsuranceService {
 
+    @Autowired
+    private RestTemplate restTemplate;
 
     public String checkUser(RequestWrapper request) {
 
@@ -26,16 +33,10 @@ public class InsuranceService {
         }
         if (uniqueId.equals(uniqueIdSignature)) {
             //kolo tmm
-            return backgroundCheck(uniqueId);
+            return "All Good";
         } else {
             return "UniqueIdNotEqualUniqueIdSignature";
         }
-
-    }
-
-    public String backgroundCheck(String id) {
-
-        return "All Good";
 
     }
 
@@ -46,7 +47,11 @@ public class InsuranceService {
 
     public String getPublicKey(String uniqueId) {
 
-        String publicKey = "";
-        return publicKey;
+        ResponseEntity<User> responseEntity = restTemplate.exchange("URL" + uniqueId, HttpMethod.GET, null, new ParameterizedTypeReference<User>() {
+        });
+
+        User user = responseEntity.getBody();
+
+        return user.getPublicKey();
     }
 }
