@@ -16,11 +16,11 @@ public class InsuranceController {
     InsuranceService insuranceService;
 
     @RequestMapping(value = "/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseWrapper insureMe(@RequestBody RequestWrapper request){
-
-        return new ResponseWrapper(insuranceService.checkUser(request));
+    public ResponseWrapper insureMe(@RequestBody RequestWrapper request) {
+        String response = insuranceService.checkUser(request);
+        System.out.println("REPSONSE: " + response);
+        return new ResponseWrapper(response);
     }
-
 
 
 }

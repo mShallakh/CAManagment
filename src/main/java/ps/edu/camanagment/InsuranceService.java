@@ -15,15 +15,16 @@ public class InsuranceService {
 
     public String checkUser(RequestWrapper request) {
 
-        //decrypt data
         String uniqueId;
         try {
             uniqueId = decryptMessage(request.data, Constants.MY_PRIVATE_KEY);
+            System.out.println("UNIQUE_ID: " + uniqueId);
         } catch (Exception e) {
             return "UniqueIdError";
         }
         //get public key from CA
         String publicKey = getPublicKey(uniqueId);
+        System.out.println("PUBLIC_KEY: " + publicKey);
         //check sign
         String uniqueIdSignature;
         try {
@@ -32,9 +33,10 @@ public class InsuranceService {
             return "UniqueIdSignatureError";
         }
         if (uniqueId.equals(uniqueIdSignature)) {
-            //kolo tmm
+            System.out.println("SIGNATURE: TRUE");
             return "All Good";
         } else {
+            System.out.println("SIGNATURE: ERROR");
             return "UniqueIdNotEqualUniqueIdSignature";
         }
 
