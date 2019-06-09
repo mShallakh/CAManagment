@@ -8,7 +8,13 @@ public class User {
 
     String name;
 
+
     String publicKey;
+
+    String privateKey;
+
+    String companyURL;
+
     int type;
 
     public User() {

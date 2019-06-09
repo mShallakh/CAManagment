@@ -1,35 +1,49 @@
 package ps.edu.camanagment;
 
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.spec.ECPrivateKeySpec;
-
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import java.math.BigInteger;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPrivateKeySpec;
+import java.util.Base64;
 
 /**
  * @author Muthafar
  */
 public class CryptographyUtil {
 
-    private static final String ALGORITHM = "RSA";
+    public static PrivateKey getPrivateKey(String base64PrivateKey) {
+        PrivateKey privateKey = null;
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(base64PrivateKey.getBytes()));
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (keyFactory != null) {
+                privateKey = keyFactory.generatePrivate(keySpec);
+            }
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        return privateKey;
+    }
 
-    static String decrypt(byte[] privateKey, byte[] inputData)
-            throws Exception {
+    public static String decrypt(byte[] data, PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        return new String(cipher.doFinal(data));
+    }
 
-        PrivateKey key = KeyFactory.getInstance(ALGORITHM)
-                .generatePrivate(new PKCS8EncodedKeySpec(privateKey));
-
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, key);
-
-        byte[] decryptedBytes = cipher.doFinal(inputData);
-
-        return new String(decryptedBytes);
+    public static String decrypt(String data, String base64PrivateKey) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
+        return decrypt(Base64.getDecoder().decode(data.getBytes()), getPrivateKey(base64PrivateKey));
     }
 
 }

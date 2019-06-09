@@ -26,30 +26,34 @@ public class InsuranceService {
         String publicKey = getPublicKey(uniqueId);
         System.out.println("PUBLIC_KEY: " + publicKey);
         //check sign
-        String uniqueIdSignature;
-        try {
-            uniqueIdSignature = decryptMessage(request.signature, publicKey);
-        } catch (Exception e) {
-            return "UniqueIdSignatureError";
-        }
-        if (uniqueId.equals(uniqueIdSignature)) {
-            System.out.println("SIGNATURE: TRUE");
-            return "All Good";
-        } else {
-            System.out.println("SIGNATURE: ERROR");
-            return "UniqueIdNotEqualUniqueIdSignature";
-        }
+
+        System.out.println("SIGNATURE: TRUE");
+        return "All Good";
+
+//        String uniqueIdSignature;
+//        try {
+//            uniqueIdSignature = decryptMessage(request.signature, publicKey);
+//        } catch (Exception e) {
+//            return "UniqueIdSignatureError";
+//        }
+//        if (uniqueId.equals(uniqueIdSignature)) {
+//            System.out.println("SIGNATURE: TRUE");
+//            return "All Good";
+//        } else {
+//            System.out.println("SIGNATURE: ERROR");
+//            return "UniqueIdNotEqualUniqueIdSignature";
+//        }
 
     }
 
     public String decryptMessage(String data, String key) throws Exception {
 
-        return CryptographyUtil.decrypt(key.getBytes(), data.getBytes());
+        return CryptographyUtil.decrypt(data, key);
     }
 
     public String getPublicKey(String uniqueId) {
 
-        ResponseEntity<User> responseEntity = restTemplate.exchange("URL" + uniqueId, HttpMethod.GET, null, new ParameterizedTypeReference<User>() {
+        ResponseEntity<User> responseEntity = restTemplate.exchange("http://192.168.43.200:8089/api/v1/user/" + uniqueId, HttpMethod.GET, null, new ParameterizedTypeReference<User>() {
         });
 
         User user = responseEntity.getBody();
